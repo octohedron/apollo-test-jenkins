@@ -58,7 +58,14 @@ export interface MockedSubscription {
   results?: MockedSubscriptionResult[];
   id?: number;
 }
-
+export interface GQLRequest extends Request {
+  debugName?: string;
+  query?: Document;
+  mutation?: Document;
+  variables?: Object;
+  operationName?: string;
+  [additionalKey: string]: any;
+}
 export class MockNetworkInterface implements NetworkInterface {
   private mockedResponsesByKey: { [key: string]: MockedResponse[] } = {};
 
@@ -78,7 +85,7 @@ export class MockNetworkInterface implements NetworkInterface {
     mockedResponses.push(mockedResponse);
   }
 
-  public query(request: Request) {
+  public query(request: GQLRequest) {
     return new Promise((resolve, reject) => {
       const parsedRequest: ParsedRequest = {
         query: request.query,
@@ -90,6 +97,36 @@ export class MockNetworkInterface implements NetworkInterface {
       const responses = this.mockedResponsesByKey[key];
       if (!responses || responses.length === 0) {
         throw new Error(`No more mocked responses for the query: ${print(request.query)}, variables: ${JSON.stringify(request.variables)}`);
+      }
+
+      const { result, error, delay } = responses.shift();
+
+      if (!result && !error) {
+        throw new Error(`Mocked response should contain either result or error: ${key}`);
+      }
+
+      setTimeout(() => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }, delay ? delay : 0);
+    });
+  }
+
+  public mutate(request: GQLRequest) {
+    return new Promise((resolve, reject) => {
+      const parsedRequest: ParsedRequest = {
+        query: request.mutation,
+        variables: request.variables,
+        debugName: request.debugName,
+      };
+
+      const key = requestToKey(parsedRequest);
+      const responses = this.mockedResponsesByKey[key];
+      if (!responses || responses.length === 0) {
+        throw new Error(`No more mocked responses for the mutation: ${print(parsedRequest.query)}, variables: ${JSON.stringify(request.variables)}`);
       }
 
       const { result, error, delay } = responses.shift();
