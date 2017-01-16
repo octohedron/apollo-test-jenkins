@@ -1,0 +1,57 @@
+import { NetworkInterface } from './transport/networkInterface';
+import { ApolloStore, ApolloReducerConfig, Store } from './store';
+import { CustomResolverMap } from './data/readFromStore';
+import { QueryManager, ApolloQueryResult, ResultComparator, ResultTransformer } from './core/QueryManager';
+import { ObservableQuery } from './core/ObservableQuery';
+import { Observable } from './util/Observable';
+import { DeprecatedWatchQueryOptions, DeprecatedSubscriptionOptions, MutationOptions } from './core/watchQueryOptions';
+import { IdGetter } from './data/extensions';
+import { MutationBehaviorReducerMap } from './data/mutationResults';
+export declare type ApolloStateSelector = (state: any) => Store;
+export default class ApolloClient {
+    networkInterface: NetworkInterface;
+    store: ApolloStore;
+    reduxRootKey: string;
+    reduxRootSelector: ApolloStateSelector | null;
+    initialState: any;
+    queryManager: QueryManager;
+    reducerConfig: ApolloReducerConfig;
+    addTypename: boolean;
+    resultTransformer: ResultTransformer;
+    resultComparator: ResultComparator;
+    shouldForceFetch: boolean;
+    dataId: IdGetter;
+    fieldWithArgs: (fieldName: string, args?: Object) => string;
+    version: string;
+    queryDeduplication: boolean;
+    private devToolsHookCb;
+    constructor({networkInterface, reduxRootKey, reduxRootSelector, initialState, dataIdFromObject, resultComparator, ssrMode, ssrForceFetchDelay, mutationBehaviorReducers, addTypename, resultTransformer, customResolvers, connectToDevTools, queryDeduplication}?: {
+        networkInterface?: NetworkInterface;
+        reduxRootKey?: string;
+        reduxRootSelector?: string | ApolloStateSelector;
+        initialState?: any;
+        dataIdFromObject?: IdGetter;
+        resultTransformer?: ResultTransformer;
+        resultComparator?: ResultComparator;
+        ssrMode?: boolean;
+        ssrForceFetchDelay?: number;
+        mutationBehaviorReducers?: MutationBehaviorReducerMap;
+        addTypename?: boolean;
+        customResolvers?: CustomResolverMap;
+        connectToDevTools?: boolean;
+        queryDeduplication?: boolean;
+    });
+    watchQuery(options: DeprecatedWatchQueryOptions): ObservableQuery;
+    query(options: DeprecatedWatchQueryOptions): Promise<ApolloQueryResult>;
+    mutate(options: MutationOptions): Promise<ApolloQueryResult>;
+    subscribe(options: DeprecatedSubscriptionOptions): Observable<any>;
+    reducer(): Function;
+    __actionHookForDevTools(cb: Function): void;
+    middleware: () => (store: ApolloStore) => (next: any) => (action: any) => any;
+    initStore(): void;
+    resetStore(): void;
+    getInitialState(): {
+        data: Object;
+    };
+    private setStore(store);
+}

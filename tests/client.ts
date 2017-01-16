@@ -59,9 +59,9 @@ import {
 
 import { withWarning } from '../src';
 
-import chaiAsPromised from 'chai-as-promised';
+// import chaiAsPromised from 'chai-as-promised';
 // make it easy to assert with promises
-chaiUse(chaiAsPromised);
+// chaiUse(chaiAsPromised);
 
 // Turn off warnings for repeated fragment names
 disableFragmentWarnings();
@@ -150,12 +150,6 @@ describe('client', () => {
     client.initStore();
 
     assert.equal(client.reduxRootKey, 'apollo');
-  });
-
-  it('throws on removed queryTransformer option', () => {
-    assert.throws(() =>
-      new ApolloClient({ queryTransformer: 'anything' })
-    , /addTypename/);
   });
 
   it('sets reduxRootKey if you use ApolloClient as middleware', () => {

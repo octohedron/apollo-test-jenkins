@@ -42,7 +42,6 @@
     "brfs": "^1.4.3",
     "browserify": "^13.1.1",
     "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
     "graphql": "^0.8.2",
     "graphql-tag": "^1.0.0",
     "isomorphic-fetch": "^2.2.1",
